@@ -1,0 +1,17 @@
+flutter_native_splash:
+  android: true
+  ios: true
+  web: false
+
+  color: "#FFFBFB" # Background color
+  image: "assets/images/splash_logo2.png" # Splash logo
+  color_dark: "#FFFBFB" # Background color
+  image_dark: "assets/images/splash_logo2.png" # Splash logo
+  ios_content_mode: "contain" # Ensure the image is not stretched or cropped
+  android_gravity: "center" # Center the image for Android
+  branding: 'assets/images/branding.png'
+  branding_dark: 'assets/images/branding.png'
+
+  android_12:
+    color: "#FFFBFB" # Background color for Android 12+
+    image: "assets/images/splash_logo.png"

@@ -1,71 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
-import 'package:sanjeevak_safety/utils/app_colors.dart';
+import 'package:flutter/animation.dart';
+import '../utils/app_colors.dart';
+import '../utils/app_textstyles.dart';
 
 class VerifyOtpScreen extends StatefulWidget {
-  const VerifyOtpScreen({super.key});
+  final String mobileNumber;
+
+  VerifyOtpScreen({super.key, required this.mobileNumber});
 
   @override
   State<VerifyOtpScreen> createState() => _VerifyOtpScreenState();
 }
 
 class _VerifyOtpScreenState extends State<VerifyOtpScreen> with SingleTickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
   final _pinController = TextEditingController();
-  final _mobileController = TextEditingController();
-
   bool _isOtpInvalid = false;
-  bool _otpSent = false;
 
-  late AnimationController _animationController;
-  late Animation<double> _shakeAnimation;
+  late AnimationController _shakeController;
+  late Animation<Offset> _shakeAnimation;
 
-  void _sendOtp() {
-    // Simulate sending OTP and move to OTP input screen
-    setState(() {
-      _otpSent = true;
+  @override
+  void initState() {
+    super.initState();
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    _shakeAnimation = Tween<Offset>(begin: Offset.zero, end: Offset(0.1, 0.0))
+        .animate(CurvedAnimation(parent: _shakeController, curve: Curves.elasticInOut));
+
+    // Reset OTP state when animation completes.
+    _shakeController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          _isOtpInvalid = false; // Reset the error state
+        });
+        _shakeController.reset(); // Reset the animation to its starting position
+      }
     });
   }
 
+  @override
+  void dispose() {
+    _shakeController.dispose();
+    super.dispose();
+  }
+
   void _validateOtp(String enteredOtp) {
-    const correctOtp = "1234"; // Replace with actual validation logic.
+    const correctOtp = "1234"; // Replace with actual OTP validation logic.
 
     if (enteredOtp != correctOtp) {
       setState(() {
         _isOtpInvalid = true;
       });
-      _animationController.forward(); // Trigger shake animation
-      _pinController.clear(); // Clear OTP field for a fresh attempt
+      _shakeController.forward(from: 0);
+      _pinController.clear();// Trigger the shake animation
     } else {
       setState(() {
         _isOtpInvalid = false;
       });
-      Navigator.pushNamed(context, '/resetPassword'); // Navigate to next screen on success
+      Navigator.pushNamed(context, '/home'); // Navigate to home screen on success
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 400),
-      vsync: this,
+  void _resendOtp() {
+    // Logic to resend OTP goes here
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('OTP resent! Please check your phone.')),
     );
-
-    _shakeAnimation = Tween<double>(begin: 0, end: 8).chain(
-      CurveTween(curve: Curves.elasticIn),
-    ).animate(_animationController)
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          _animationController.reset(); // Reset animation after shaking.
-        }
-      });
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 
   @override
@@ -75,128 +79,84 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> with SingleTickerProv
       height: 56,
       textStyle: const TextStyle(fontSize: 22, color: Colors.black),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey[800]!),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade400),
+        color: Colors.white,
       ),
     );
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Verify OTP"),
-        centerTitle: true,
+        title: const Text("Verify OTP", style: AppTextStyles.heading2,),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-              // Mobile Number Input
-              if (!_otpSent)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Enter your Mobile Number",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              Text(
+                "Verification code sent to: ${widget.mobileNumber}", // Display the mobile number
+                style: const TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "Enter the 4-digit OTP",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              const SizedBox(height: 10),
+
+              // Add shake animation when OTP is invalid
+              SlideTransition(
+                position: _shakeAnimation,
+                child: Pinput(
+                  length: 4,
+                  controller: _pinController,
+                  defaultPinTheme: defaultPinTheme,
+                  focusedPinTheme: defaultPinTheme.copyWith(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.primaryColor),
+                      color: Colors.white,
                     ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: _mobileController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        hintText: "Enter Mobile Number",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
+                  ),
+                  errorPinTheme: defaultPinTheme.copyWith(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.redAccent),
+                      color: Colors.white,
                     ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _sendOtp,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16), backgroundColor: AppColors.secondaryColor,
-                        ),
-                        child: const Text("Send OTP"),
-                      ),
-                    ),
-                  ],
+                  ),
+                  onCompleted: _validateOtp,
                 ),
-              // OTP Input Fields
-              if (_otpSent)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Enter the 4-digit OTP",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                    ),
-                    const SizedBox(height: 10),
-                    AnimatedBuilder(
-                      animation: _shakeAnimation,
-                      builder: (context, child) {
-                        return Transform.translate(
-                          offset: Offset(
-                            _isOtpInvalid ? _shakeAnimation.value : 0,
-                            0,
-                          ),
-                          child: child,
-                        );
-                      },
-                      child: Pinput(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        length: 4,
-                        controller: _pinController,
-                        defaultPinTheme: defaultPinTheme,
-                        autofocus: true,
-                        onCompleted: _validateOtp,
-                        focusedPinTheme: defaultPinTheme.copyWith(
-                          decoration: defaultPinTheme.decoration!.copyWith(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.black),
-                          ),
-                        ),
-                        errorPinTheme: defaultPinTheme.copyWith(
-                          decoration: defaultPinTheme.decoration!.copyWith(
-                            border: Border.all(color: Colors.redAccent),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 25),
-                    if (_isOtpInvalid)
-                      const Text(
-                        "Invalid OTP. Please try again.",
-                        style: TextStyle(color: Colors.red, fontSize: 14),
-                      ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _validateOtp(_pinController.text);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16), backgroundColor: Theme.of(context).primaryColor,
-                        ),
-                        child: const Text("Verify OTP"),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _otpSent = false; // Reset after resend OTP
-                          _mobileController.clear();
-                        });
-                      },
-                      child: const Text("Resend OTP"),
-                    ),
-                  ],
+              ),
+              const SizedBox(height: 25),
+              if (_isOtpInvalid)
+                const Text(
+                  "Invalid OTP. Please try again.",
+                  style: TextStyle(color: Colors.red, fontSize: 14),
                 ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _validateOtp(_pinController.text);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
+                  child: const Text("Verify OTP"),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: _resendOtp,
+                child: const Text(
+                  "Resend OTP",
+                  style: TextStyle(color: AppColors.primaryColor),
+                ),
+              ),
             ],
           ),
         ),

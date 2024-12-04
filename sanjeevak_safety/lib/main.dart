@@ -39,7 +39,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Sanjeevak Safety',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme, // Applying the light theme
-      initialRoute: Routes.login, // Initial route
+      initialRoute: Routes.bottomNavbar, // Initial route
       onGenerateRoute: Routes.generateRoute, // Route generator for navigation
     );
   }

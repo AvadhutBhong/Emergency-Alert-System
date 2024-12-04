@@ -3,13 +3,13 @@ import 'app_colors.dart';
 
 class AppTextStyles {
   static const heading1 = TextStyle(
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: FontWeight.bold,
     color: AppColors.textColor,
   );
 
   static const heading2 = TextStyle(
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: FontWeight.w600,
     color: AppColors.textColor,
   );

@@ -6,98 +6,84 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.light, // Defines the brightness of the theme (Light Mode).
+      brightness: Brightness.light,
 
       // Main Color Scheme for the App
       colorScheme: const ColorScheme.light(
-        primary: AppColors.primaryColor, // Primary color for buttons, app bars, etc.
-        onPrimary: Colors.white, // Text color for content over the primary color.
-        secondary: AppColors.secondaryColor, // Secondary accent color.
-        onSecondary: Colors.white, // Text color for content over the secondary color.
-        surface: AppColors.surfaceColor, // Background color for cards and surfaces.
-        error: AppColors.errorColor, // Color for error messages or error UI elements.
-        onSurface: AppColors.textColor, // Default text color for surfaces.
+        primary: AppColors.primaryColor,
+        onPrimary: Colors.white,
+        secondary: AppColors.secondaryColor,
+        onSecondary: Colors.white,
+        surface: AppColors.surfaceColor,
+        error: AppColors.errorColor,
+        onSurface: AppColors.textColor,
       ),
 
-      // Background color for the entire app.
       scaffoldBackgroundColor: AppColors.backgroundColor,
 
       // AppBar Styling
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.surfaceColor, // AppBar's background color.
-        elevation: 0, // Removes shadow from AppBar.
-        centerTitle: true, // Centers the title text in AppBar.
-        titleTextStyle: AppTextStyles.heading1, // Text style for the AppBar's title.
-        iconTheme: IconThemeData(color: Colors.white), // Icon color in the AppBar.
+        backgroundColor: AppColors.surfaceColor,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: AppTextStyles.heading1,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
 
       // Text Theme for global text styles
       textTheme: const TextTheme(
-        displayLarge: AppTextStyles.heading1, // Large headers (e.g., titles on major screens).
-        displayMedium: AppTextStyles.heading2, // Medium headers (e.g., section titles).
-        bodyLarge: AppTextStyles.bodyText, // Main text style for paragraphs or content.
-        bodyMedium: AppTextStyles.bodyTextSubdued, // Subdued text for hints or secondary content.
-        labelLarge: AppTextStyles.buttonText, // Text style for buttons.
-        titleSmall: AppTextStyles.caption, // Text style for small captions or labels.
+        displayLarge: AppTextStyles.heading1,
+        displayMedium: AppTextStyles.heading2,
+        bodyLarge: AppTextStyles.bodyText,
+        bodyMedium: AppTextStyles.bodyTextSubdued,
+        labelLarge: AppTextStyles.buttonText,
+        titleSmall: AppTextStyles.caption,
       ),
 
-      // ElevatedButton Styling (Used for primary actions in the app)
+      // ElevatedButton Styling
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryColor, // Button background color.
-          foregroundColor: Colors.white, // Text color for elevated buttons.
-          textStyle: AppTextStyles.buttonText, // Text style for button content.
+          backgroundColor: AppColors.primaryColor,
+          foregroundColor: Colors.white,
+          textStyle: AppTextStyles.buttonText,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8), // Rounded edges for buttons.
+            borderRadius: BorderRadius.circular(20), // More modern rounded buttons
           ),
         ),
       ),
 
-      // OutlinedButton Styling (Used for secondary or outlined buttons)
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primaryColor, // Text color for outlined buttons.
-          textStyle: AppTextStyles.buttonText, // Text style for button content.
-          side: const BorderSide(color: AppColors.primaryColor), // Border color for buttons.
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8), // Rounded edges for outlined buttons.
-          ),
-        ),
-      ),
-
-      // Input Field Styling (Used for forms and text inputs)
+      // Input Field Styling
       inputDecorationTheme: InputDecorationTheme(
-        filled: true, // Input fields will have a background color.
-        fillColor: AppColors.backgroundColor, // Background color for input fields.
+        filled: true,
+        fillColor: AppColors.backgroundColor,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8), // Rounded edges for input fields.
-          borderSide: const BorderSide(color: AppColors.borderColor), // Default border color.
+          borderRadius: BorderRadius.circular(20), // More rounded edges
+          borderSide: const BorderSide(color: AppColors.borderColor),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8), // Border for enabled input fields.
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: AppColors.borderColor),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8), // Border for focused input fields.
-          borderSide: const BorderSide(color: AppColors.primaryColor), // Highlighted border.
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: AppColors.textColor, width: 1),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8), // Border for error states.
-          borderSide: const BorderSide(color: AppColors.errorColor), // Error color for borders.
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: AppColors.errorColor, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), // Spacing inside input fields.
-        hintStyle: AppTextStyles.bodyTextSubdued, // Style for placeholder text.
-        labelStyle: AppTextStyles.bodyText, // Style for labels.
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        hintStyle: AppTextStyles.bodyTextSubdued.copyWith(fontSize: 14),
+        labelStyle: AppTextStyles.bodyText.copyWith(fontSize: 14, color: AppColors.textColor),
       ),
 
-      // Floating Action Button Styling (Used for floating actions)
+      // Floating Action Button Styling
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.primaryColor, // Background color for FAB.
-        foregroundColor: Colors.white, // Icon/text color for FAB.
+        backgroundColor: AppColors.primaryColor,
+        foregroundColor: Colors.white,
       ),
 
-      // Icon Theme (Global icon styling)
-      iconTheme: const IconThemeData(color: AppColors.textColor), // Default icon color.
+      iconTheme: const IconThemeData(color: AppColors.textColor),
     );
   }
 }

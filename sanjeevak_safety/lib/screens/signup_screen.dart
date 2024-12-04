@@ -4,11 +4,18 @@ import '../utils/app_colors.dart';
 import '../utils/app_textstyles.dart';
 import '../widgets/custom_text_field.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
+  @override
+  _SignUpScreenState createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _mobileController = TextEditingController();
+  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +23,7 @@ class LoginScreen extends StatelessWidget {
     final isTablet = size.width >= 600;
 
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -28,6 +36,7 @@ class LoginScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    // SizedBox(height: size.height * 0.05),
                     Center(
                       child: Image.asset(
                         'assets/images/splash_logo.png',
@@ -37,15 +46,15 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 42),
                     const Text(
-                      "Welcome Back 👋",
+                      "Create Account",
                       style: AppTextStyles.heading1,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "Log in to access emergency alerts, share your location, and connect with nearby services.",
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textColor.withOpacity(0.7),
+                      "Join to quickly alert contacts, share your location, and access nearby emergency services.",
+                      style: AppTextStyles.bodyText.copyWith(
+                        color: AppColors.subduedTextColor,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -55,6 +64,53 @@ class LoginScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // Full Name
+                          Text(
+                            "Full Name",
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          CustomTextField(
+                            controller: _fullNameController,
+                            hint: "Enter your full name",
+                            icon: Icons.person_outline,
+                            inputType: TextInputType.text,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Full name is required.";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Email
+                          Text(
+                            "Email",
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          CustomTextField(
+                            controller: _emailController,
+                            hint: "Enter your email",
+                            icon: Icons.email_outlined,
+                            inputType: TextInputType.emailAddress,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Email is required.";
+                              }
+                              if (!RegExp(r"^[a-zA-Z0-9]+@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,}$").hasMatch(value)) {
+                                return "Enter a valid email address.";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+
                           // Phone Number
                           Text(
                             "Phone Number",
@@ -64,9 +120,9 @@ class LoginScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           CustomTextField(
-                            controller: _mobileController, // Add controller here
+                            controller: _phoneController,
                             hint: "Enter your phone number",
-                            icon: Icons.phone,
+                            icon: Icons.phone_outlined,
                             inputType: TextInputType.phone,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -78,40 +134,42 @@ class LoginScreen extends StatelessWidget {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 30),
 
-                          // Login Button (Redirect to OTP Verification)
+                          // Get OTP Button
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
                                 if (_formKey.currentState?.validate() ?? false) {
-                                  // Pass the mobile number to VerifyOtpScreen
-                                  print("Passing mobile number: ${_mobileController.text}");
-
+                                  // Pass controllers to the OTP screen
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => VerifyOtpScreen(mobileNumber: _mobileController.text),
+                                      builder: (context) => VerifyOtpScreen(mobileNumber: _phoneController.text),
                                     ),
                                   );
-
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: isTablet ? 20 : 16,
-                                ),
+                                backgroundColor: AppColors.primaryColor,
+                                padding: const EdgeInsets.symmetric(vertical: 16),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(15),
                                 ),
                               ),
-                              child: Text("Log in with OTP", style: Theme.of(context).textTheme.labelLarge),
+                              child: Text(
+                                "Get OTP",
+                                style: AppTextStyles.buttonText.copyWith(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 10),
 
-                          // Sign Up Prompt
+                          // Already Have an Account
                           Align(
                             alignment: Alignment.center,
                             child: TextButton(
@@ -120,7 +178,7 @@ class LoginScreen extends StatelessWidget {
                               },
                               child: RichText(
                                 text: TextSpan(
-                                  text: "Don't have an account yet? ",
+                                  text: "Already have an account? ",
                                   style: AppTextStyles.bodyText.copyWith(
                                     color: AppColors.textColor,
                                     fontWeight: FontWeight.w500,
@@ -128,9 +186,9 @@ class LoginScreen extends StatelessWidget {
                                   ),
                                   children: const <TextSpan>[
                                     TextSpan(
-                                      text: "Sign Up",
+                                      text: "Log in",
                                       style: TextStyle(
-                                        color: AppColors.primaryColor,
+                                        color: AppColors.primaryColor, // Set this color for the "Log in" text
                                         fontWeight: FontWeight.w700,
                                         fontSize: 16,
                                       ),
